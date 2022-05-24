@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class TicketDao {
@@ -31,35 +33,44 @@ public class TicketDao {
 	
 	public void buyTicket(final TicketDto dto) {
 		
-		
-		
-		template.update(new PreparedStatementCreator() {
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 			
 			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				// TODO Auto-generated method stub
-				String query = "insert into card(consumerid, amount) values(?,?)";
-				PreparedStatement pstmt = con.prepareStatement(query);
-				pstmt.setString(1, dto.getConsumerid());
-				pstmt.setString(2, dto.getAmount());
 				
-				return pstmt;
+				template.update(new PreparedStatementCreator() {
+					
+					@Override
+					public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+						// TODO Auto-generated method stub
+						String query = "insert into card(consumerid, amount) values(?,?)";
+						PreparedStatement pstmt = con.prepareStatement(query);
+						pstmt.setString(1, dto.getConsumerid());
+						pstmt.setString(2, dto.getAmount());
+						
+						return pstmt;
+					}
+				});
+				
+				template.update(new PreparedStatementCreator() {
+					
+					@Override
+					public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+						// TODO Auto-generated method stub
+						String query = "insert into ticket(consumerid, countnum) values(?,?)";
+						PreparedStatement pstmt = con.prepareStatement(query);
+						pstmt.setString(1, dto.getConsumerid());
+						pstmt.setString(2, dto.getAmount());
+						
+						return pstmt;
+					}
+				});
+				
 			}
 		});
 		
-		template.update(new PreparedStatementCreator() {
-			
-			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				// TODO Auto-generated method stub
-				String query = "insert into ticket(consumerid, countnum) values(?,?)";
-				PreparedStatement pstmt = con.prepareStatement(query);
-				pstmt.setString(1, dto.getConsumerid());
-				pstmt.setString(2, dto.getAmount());
-				
-				return pstmt;
-			}
-		});
+		
 		
 		
 	}
