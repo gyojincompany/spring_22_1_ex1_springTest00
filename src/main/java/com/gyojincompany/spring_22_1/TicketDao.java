@@ -6,14 +6,23 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class TicketDao {
 
 	JdbcTemplate template;
+	TransactionTemplate transactionTemplate;
+	
 
 	public void setTemplate(JdbcTemplate template) {
 		this.template = template;
+	}	
+	
+
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
 	}
+
 
 	public TicketDao() {
 		super();
@@ -21,6 +30,8 @@ public class TicketDao {
 	}
 	
 	public void buyTicket(final TicketDto dto) {
+		
+		
 		
 		template.update(new PreparedStatementCreator() {
 			
